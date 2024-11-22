@@ -26,6 +26,12 @@ const extractSession = (
     return session
   }
 
+    // Add tenant_id to both access_token and id_token claims
+    if (identity.traits.tenant_id) {
+        session.access_token.tenant_id = identity.traits.tenant_id
+        session.id_token.tenant_id = identity.traits.tenant_id
+    }
+
   if (grantScope.includes("email")) {
     const addresses = identity.verifiable_addresses || []
     if (addresses.length > 0) {
@@ -58,9 +64,7 @@ const extractSession = (
     }
 
     if (identity.updated_at) {
-      session.id_token.updated_at = parseInt(
-        (Date.parse(identity.updated_at) / 1000).toFixed(0),
-      )
+      session.id_token.updated_at = Date.parse(identity.updated_at)
     }
   }
   return session
